@@ -12,7 +12,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
 public class SeleniumTest {
-
 	private static List<String> resultList = new ArrayList<String>();
 
 	private static WebDriver driver = null;
@@ -21,70 +20,131 @@ public class SeleniumTest {
 		File testFile = FileUtils.selectFilesAndDir();
 
 		List<String> cmdList = FileUtils.readTestDoc(testFile);
-		try {
 
-			for (String cmd : cmdList) {
-				String[] cArr = StringUtils.split(cmd, " ");
-				String c0 = cArr[0];
-				switch (c0) {
-				case "openbrowser":
-					driver = BrowserUtils.openBrowser(cArr[1]);
-					resultList = addResultList("--- open browser " + cArr[1]);
-					break;
-				case "opengeturl":
-					driver.get(cArr[1]);
-					resultList = addResultList("--- open get url " + cArr[1]);
-					break;
-				case "checktitle":
-					String title = driver.getTitle();
-					resultList = checkTextEquals(cmd, cArr[1], title);
-					break;
-				case "checkattribute":
-					String strSpecial = driver.findElement(By.id(cArr[1])).getAttribute(cArr[2]);
-					resultList = checkTextEquals(cmd, cArr[3], strSpecial);
-					break;
-				case "click":
-					driver.findElement(By.id(cArr[1])).click();
-					resultList = addResultList("-- click " + cArr[1]);
-					break;
-				case "input":
-					driver.findElement(By.id(cArr[1])).sendKeys(cArr[2]);
-					resultList = addResultList("-- input at " + cArr[1] + ", value = " + cArr[2]);
-					break;
-				case "clear":
-					driver.findElement(By.id(cArr[1])).clear();
-					resultList = addResultList("-- clear at " + cArr[1]);
-					break;
-				case "quitbrowser":
-					BrowserUtils.quitBrowser(driver);
-					resultList = addResultList("--- quit browser chrome");
-					break;
-				case "js":
-					JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-					jsExecutor.executeScript(cArr[1]);
-					break;
-				case "getinput":
-					String elementId = cArr[1];
-					String inputValue = JOptionPane.showInputDialog("Please input a value at " + elementId);
-					driver.findElement(By.id(elementId)).sendKeys(inputValue);
-					break;
-				case "wait":
-					JOptionPane.showMessageDialog(null, "loading...", "Please click OK after loading finish",
-							JOptionPane.OK_OPTION);
-					break;
-				default:
-					break;
-				}
-
+		for (String cmd : cmdList) {
+			String[] cArr = StringUtils.split(cmd, " ");
+			String c0 = cArr[0];
+			switch (c0) {
+			case "openbrowser":
+				openBrowser(cArr[1]);
+				break;
+			case "opengeturl":
+				openUrl(cArr[1]);
+				break;
+			case "checktitle":
+				String title = driver.getTitle();
+				resultList = checkTextEquals(cmd, cArr[1], title);
+				break;
+			case "checkattribute":
+				String strSpecial = driver.findElement(By.id(cArr[1])).getAttribute(cArr[2]);
+				resultList = checkTextEquals(cmd, cArr[3], strSpecial);
+				break;
+			case "click":
+				click(cArr[1]);
+				break;
+			case "input":
+				input(cArr[1], cArr[2]);
+				break;
+			case "clear":
+				clear(cArr[1]);
+				break;
+			case "js":
+				js(cArr[1]);
+				break;
+			case "inputbox":
+				inputBox(cArr[1]);
+				break;
+			case "wait":
+				JOptionPane.showMessageDialog(null, "loading...", "Please click OK after loading finish",
+						JOptionPane.OK_OPTION);
+				break;
+			case "quitbrowser":
+				quitBrowser();
+				break;
+			default:
+				break;
 			}
-		} catch (Exception e) {
 
-		} finally {
-			FileUtils.createReport(testFile.getParent(), resultList);
-
-			cleanStaticObjects();
 		}
 
+		FileUtils.createReport(testFile.getParent(), resultList);
+
+		cleanStaticObjects();
+
+	}
+
+	private static void click(String elementId) {
+		try {
+			driver.findElement(By.id(elementId)).click();
+			resultList = addResultList("-- click " + elementId);
+		} catch (Exception e) {
+			resultList = addResultList("false -- click " + elementId);
+		}
+	}
+
+	private static void input(String elementId, String value) {
+		try {
+			driver.findElement(By.id(elementId)).sendKeys(value);
+			resultList = addResultList("-- input at " + elementId + ", value = " + value);
+		} catch (Exception e) {
+			resultList = addResultList("false -- input at " + elementId + ", value = " + value);
+		}
+	}
+
+	private static void clear(String elementId) {
+		try {
+			driver.findElement(By.id(elementId)).clear();
+			resultList = addResultList("-- clear at " + elementId);
+		} catch (Exception e) {
+			resultList = addResultList("false -- clear at " + elementId);
+		}
+	}
+
+	private static void js(String js) {
+		try {
+			JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+			jsExecutor.executeScript(js);
+			resultList = addResultList("-- js " + js);
+		} catch (Exception e) {
+			resultList = addResultList("false -- js " + js);
+		}
+	}
+
+	private static void inputBox(String elementId) {
+		try {
+			String inputValue = JOptionPane.showInputDialog("Please input a value at " + elementId);
+			driver.findElement(By.id(elementId)).sendKeys(inputValue);
+			resultList = addResultList("-- inputbox " + elementId);
+		} catch (Exception e) {
+			resultList = addResultList("false -- inputbox " + elementId);
+		}
+	}
+
+	private static void openBrowser(String browser) {
+		try {
+			driver = BrowserUtils.openBrowser(browser);
+			resultList = addResultList("--- open browser " + browser);
+		} catch (Exception e) {
+			resultList = addResultList("false --- open browser " + browser);
+		}
+	}
+
+	private static void quitBrowser() {
+		try {
+			BrowserUtils.quitBrowser(driver);
+			resultList = addResultList("--- quit browser chrome");
+		} catch (Exception e) {
+			resultList = addResultList("false --- quit browser chrome");
+		}
+	}
+
+	private static void openUrl(String url) {
+		try {
+			driver.get(url);
+			resultList = addResultList("--- open get url " + url);
+		} catch (Exception e) {
+			resultList = addResultList("false --- open get url " + url);
+		}
 	}
 
 	public static List<String> addResultList(String r) {

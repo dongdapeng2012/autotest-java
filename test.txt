@@ -4,7 +4,7 @@ wait
 checktitle baidu
 click email
 input email 123123123
-getinput captchaCode
+inputbox captchaCode
 checktext email 234234243
 checkattribute email type text
 checkattribute email value 234234243
