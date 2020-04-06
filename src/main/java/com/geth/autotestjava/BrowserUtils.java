@@ -18,8 +18,11 @@ public class BrowserUtils {
 		default:
 			break;
 		}
-
 		return driver;
+	}
+	
+	public static void quitBrowser(WebDriver driver) {
+		driver.quit();
 	}
 
 }

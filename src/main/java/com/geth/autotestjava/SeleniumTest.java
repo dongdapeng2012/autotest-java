@@ -24,50 +24,52 @@ public class SeleniumTest {
 
 			for (String cmd : cmdList) {
 				String[] cArr = StringUtils.split(cmd, " ");
-
-				switch (cArr[0]) {
+				String c0 = cArr[0];
+				switch (c0) {
 				case "openbrowser":
 					driver = BrowserUtils.openBrowser(cArr[1]);
-					resultList = addResultList("open browser " + cArr[1]);
+					resultList = addResultList("--- open browser " + cArr[1]);
 					break;
 				case "opengeturl":
 					driver.get(cArr[1]);
-					resultList = addResultList("open get url " + cArr[1]);
+					resultList = addResultList("--- open get url " + cArr[1]);
 					break;
 				case "checktitle":
 					String title = driver.getTitle();
-					System.out.printf("expect " + cArr[1] + ", is " + title);
-					resultList = check("checktitle", cArr[1], title);
+					resultList = checkTextEquals(cmd, cArr[1], title);
 					break;
-				case "checktext":
-					String text = driver.findElement(By.id(cArr[1])).getText();
-					resultList = check("checktext", cArr[2], text);
-					break;
-				case "checkspecial":
+				case "checkattribute":
 					String strSpecial = driver.findElement(By.id(cArr[1])).getAttribute(cArr[2]);
-					System.out.printf("expect " + strSpecial + ", is " + strSpecial);
-					resultList = check("checkspecial", cArr[3], strSpecial);
+					resultList = checkTextEquals(cmd, cArr[3], strSpecial);
 					break;
 				case "click":
 					driver.findElement(By.id(cArr[1])).click();
+					resultList = addResultList("-- click " + cArr[1]);
 					break;
 				case "input":
 					driver.findElement(By.id(cArr[1])).sendKeys(cArr[2]);
+					resultList = addResultList("-- input at " + cArr[1] + ", value = " + cArr[2]);
 					break;
 				case "clear":
 					driver.findElement(By.id(cArr[1])).clear();
+					resultList = addResultList("-- clear at " + cArr[1]);
 					break;
 				case "quitbrowser":
-					driver.quit();
-					resultList = addResultList("quit browser chrome");
+					BrowserUtils.quitBrowser(driver);
+					resultList = addResultList("--- quit browser chrome");
 					break;
 				case "js":
 					JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 					jsExecutor.executeScript(cArr[1]);
 					break;
 				case "getinput":
-					String inputValue = JOptionPane.showInputDialog("Please input a value at " + cArr[1]);
-					driver.findElement(By.id(cArr[1])).sendKeys(inputValue);
+					String elementId = cArr[1];
+					String inputValue = JOptionPane.showInputDialog("Please input a value at " + elementId);
+					driver.findElement(By.id(elementId)).sendKeys(inputValue);
+					break;
+				case "wait":
+					JOptionPane.showMessageDialog(null, "loading...", "Please click OK after loading finish",
+							JOptionPane.OK_OPTION);
 					break;
 				default:
 					break;
@@ -97,11 +99,11 @@ public class SeleniumTest {
 		driver = null;
 	}
 
-	public static List<String> check(String function, String strExp, String strReal) {
-		if (StringUtils.equalsIgnoreCase(strExp, strReal)) {
-			resultList = addResultList(function + " result true. expect " + strExp + ", is " + strReal);
+	public static List<String> checkTextEquals(String cmd, String strExp, String strReal) {
+		if (StringUtils.equals(strExp, strReal)) {
+			resultList = addResultList("true for " + cmd + ", real value is " + strReal);
 		} else {
-			resultList = addResultList(function + " result false. expect " + strExp + ", is " + strReal);
+			resultList = addResultList("false for " + cmd + ", real value is " + strReal);
 		}
 		return resultList;
 	}
