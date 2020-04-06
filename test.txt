@@ -1,6 +1,6 @@
 openbrowser chrome
-opengeturl https://www.fidelity.com.hk/securesite/dso/er/static/en/login
-wait
+openurl https://www.fidelity.com.hk/securesite/dso/er/static/en/login
+loading
 checktitle baidu
 click email
 input email 123123123

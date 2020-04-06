@@ -23,21 +23,18 @@ public class SeleniumTest {
 
 		for (String cmd : cmdList) {
 			String[] cArr = StringUtils.split(cmd, " ");
-			String c0 = cArr[0];
-			switch (c0) {
+			switch (cArr[0]) {
 			case "openbrowser":
 				openBrowser(cArr[1]);
 				break;
-			case "opengeturl":
+			case "openurl":
 				openUrl(cArr[1]);
 				break;
 			case "checktitle":
-				String title = driver.getTitle();
-				resultList = checkTextEquals(cmd, cArr[1], title);
+				checkTitle(cmd, cArr[1]);
 				break;
 			case "checkattribute":
-				String strSpecial = driver.findElement(By.id(cArr[1])).getAttribute(cArr[2]);
-				resultList = checkTextEquals(cmd, cArr[3], strSpecial);
+				checkAttribute(cmd, cArr[1], cArr[2], cArr[3]);
 				break;
 			case "click":
 				click(cArr[1]);
@@ -54,9 +51,8 @@ public class SeleniumTest {
 			case "inputbox":
 				inputBox(cArr[1]);
 				break;
-			case "wait":
-				JOptionPane.showMessageDialog(null, "loading...", "Please click OK after loading finish",
-						JOptionPane.OK_OPTION);
+			case "loading":
+				loading();
 				break;
 			case "quitbrowser":
 				quitBrowser();
@@ -73,12 +69,33 @@ public class SeleniumTest {
 
 	}
 
+	private static void loading() {
+		JOptionPane.showMessageDialog(null, "loading...", "Please click OK after loading finish",
+				JOptionPane.OK_OPTION);
+	}
+
+	private static void checkTitle(String cmd, String value) {
+		try {
+			resultList = checkTextEquals(cmd, value, driver.getTitle());
+		} catch (Exception e) {
+			resultList = addResultList("error -- checkTtitle");
+		}
+	}
+
+	private static void checkAttribute(String cmd, String elementId, String attribute, String value) {
+		try {
+			resultList = checkTextEquals(cmd, value, driver.findElement(By.id(elementId)).getAttribute(attribute));
+		} catch (Exception e) {
+			resultList = addResultList("error -- checkAttribute");
+		}
+	}
+
 	private static void click(String elementId) {
 		try {
 			driver.findElement(By.id(elementId)).click();
 			resultList = addResultList("-- click " + elementId);
 		} catch (Exception e) {
-			resultList = addResultList("false -- click " + elementId);
+			resultList = addResultList("error -- click " + elementId);
 		}
 	}
 
@@ -87,7 +104,7 @@ public class SeleniumTest {
 			driver.findElement(By.id(elementId)).sendKeys(value);
 			resultList = addResultList("-- input at " + elementId + ", value = " + value);
 		} catch (Exception e) {
-			resultList = addResultList("false -- input at " + elementId + ", value = " + value);
+			resultList = addResultList("error -- input at " + elementId + ", value = " + value);
 		}
 	}
 
@@ -96,7 +113,7 @@ public class SeleniumTest {
 			driver.findElement(By.id(elementId)).clear();
 			resultList = addResultList("-- clear at " + elementId);
 		} catch (Exception e) {
-			resultList = addResultList("false -- clear at " + elementId);
+			resultList = addResultList("error -- clear at " + elementId);
 		}
 	}
 
@@ -106,7 +123,7 @@ public class SeleniumTest {
 			jsExecutor.executeScript(js);
 			resultList = addResultList("-- js " + js);
 		} catch (Exception e) {
-			resultList = addResultList("false -- js " + js);
+			resultList = addResultList("error -- js " + js);
 		}
 	}
 
@@ -116,7 +133,7 @@ public class SeleniumTest {
 			driver.findElement(By.id(elementId)).sendKeys(inputValue);
 			resultList = addResultList("-- inputbox " + elementId);
 		} catch (Exception e) {
-			resultList = addResultList("false -- inputbox " + elementId);
+			resultList = addResultList("error -- inputbox " + elementId);
 		}
 	}
 
@@ -125,7 +142,7 @@ public class SeleniumTest {
 			driver = BrowserUtils.openBrowser(browser);
 			resultList = addResultList("--- open browser " + browser);
 		} catch (Exception e) {
-			resultList = addResultList("false --- open browser " + browser);
+			resultList = addResultList("error --- open browser " + browser);
 		}
 	}
 
@@ -134,7 +151,7 @@ public class SeleniumTest {
 			BrowserUtils.quitBrowser(driver);
 			resultList = addResultList("--- quit browser chrome");
 		} catch (Exception e) {
-			resultList = addResultList("false --- quit browser chrome");
+			resultList = addResultList("error --- quit browser chrome");
 		}
 	}
 
@@ -143,7 +160,7 @@ public class SeleniumTest {
 			driver.get(url);
 			resultList = addResultList("--- open get url " + url);
 		} catch (Exception e) {
-			resultList = addResultList("false --- open get url " + url);
+			resultList = addResultList("error --- open get url " + url);
 		}
 	}
 
