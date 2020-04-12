@@ -142,7 +142,7 @@ public class SeleniumTest {
 			driver = BrowserUtils.openBrowser(browser);
 			resultList = addResultList("--- open browser " + browser);
 		} catch (Exception e) {
-			resultList = addResultList("error --- open browser " + browser);
+			resultList = addResultList("error --- open browser " + browser + "\n" + e);
 		}
 	}
 
@@ -173,8 +173,8 @@ public class SeleniumTest {
 	public static void cleanStaticObjects() {
 		resultList = null;
 
-		driver.quit();
-		driver = null;
+//		driver.quit();
+//		driver = null;
 	}
 
 	public static List<String> checkTextEquals(String cmd, String strExp, String strReal) {
