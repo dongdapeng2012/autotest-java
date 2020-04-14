@@ -2,10 +2,14 @@ openbrowser chrome
 openurl https://www.fidelity.com.hk/securesite/dso/er/static/en/login
 loading
 checktitle baidu
-click email
-input email 123123123
-inputbox captchaCode
-checktext email 234234243
-checkattribute email type text
-checkattribute email value 234234243
+-click email
+-input email 123123123
+-inputbox captchaCode
+-checktext email 234234243
+-checkattribute email type text
+-checkattribute email value 234234243
+runscript E:\sts\autotest-java\test1.txt
+loading
+runscript E:\sts\autotest-java\test1.txt
+loading
 quitbrowser

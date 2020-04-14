@@ -15,6 +15,8 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class FileUtils {
 
 	public static File selectFilesAndDir() {
@@ -53,12 +55,12 @@ public class FileUtils {
 		return result;
 	}
 
-	public static void createReport(String parentPath, List<String> strList) {
+	public static void createReport(File t, List<String> r) {
 		LocalDateTime now = LocalDateTime.now();
-		DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyyMMdd_hhmmss");
+		DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyyMMdd_hhmmss_SSS");
 		String nowStr = now.format(formatter2);
 
-		String path = parentPath + "/result_" + nowStr + ".txt";
+		String path = t.getParent() + "/result_" + StringUtils.split(t.getName(), ".")[0] + "_" + nowStr + ".txt";
 		File file = new File(path);
 
 		System.out.print("result at " + file.getPath());
@@ -72,7 +74,7 @@ public class FileUtils {
 			// write
 			FileWriter fw = new FileWriter(file, false);
 			BufferedWriter bw = new BufferedWriter(fw);
-			for (String str : strList) {
+			for (String str : r) {
 				bw.write(str);
 				bw.write("\n");
 			}
