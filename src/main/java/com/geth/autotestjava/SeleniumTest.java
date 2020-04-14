@@ -18,7 +18,7 @@ import org.openqa.selenium.WebDriver;
 public class SeleniumTest {
 	private static List<String> resultList = new ArrayList<String>();
 
-	private static Map<Integer, String> resultListMap = new ConcurrentHashMap<Integer, String>();
+	private static Map<Integer, List<String>> resultListMap = new ConcurrentHashMap<Integer, List<String>>();
 
 	private static WebDriver driver = null;
 
@@ -209,12 +209,11 @@ public class SeleniumTest {
 				quitBrowser();
 				break;
 			case "runscript":
-				resultListMap.put(depth, String.join("<SEPARATOR>", resultList));
+				resultListMap.put(depth, new ArrayList<>(resultList));
 				resultList = new ArrayList<String>();
 				boolean runScriptResult = runTest(new File(cArr[1]), depth + 1) && result;
 				result = runScriptResult && result;
-				resultList = new ArrayList<>(
-						Arrays.asList(StringUtils.split(resultListMap.remove(depth), "<SEPARATOR>")));
+				resultList = resultListMap.remove(depth);
 				resultList = addResultList(runScriptResult + " --- " + cmd);
 				break;
 			default:
