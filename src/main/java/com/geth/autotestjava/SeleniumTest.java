@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import javax.swing.JOptionPane;
 
@@ -20,8 +22,13 @@ public class SeleniumTest {
 
 	private static WebDriver driver = null;
 
+	private static Map<String, String> param = new ConcurrentHashMap<String, String>();
+
+	private static Set<String> pathSet = new ConcurrentSkipListSet<String>();
+
 	public static void main(String[] args) {
 		File testFile = FileUtils.selectFilesAndDir();
+		pathSet.add(testFile.getAbsolutePath());
 
 		runTest(testFile, 0);
 
@@ -117,7 +124,7 @@ public class SeleniumTest {
 			resultList = addResultList("true --- open browser " + browser);
 			return true;
 		} catch (Exception e) {
-			resultList = addResultList("error --- open browser " + browser + "\n" + e);
+			resultList = addResultList("error --- open browser " + browser);
 			return false;
 		}
 	}
@@ -140,6 +147,72 @@ public class SeleniumTest {
 			return true;
 		} catch (Exception e) {
 			resultList = addResultList("error --- open url " + url);
+			return false;
+		}
+	}
+
+	private static boolean addParam(String key, String value) {
+		try {
+			param.put(key, value);
+			resultList = addResultList("true --- addParam at key = " + key + ", value = " + value);
+			return true;
+		} catch (Exception e) {
+			resultList = addResultList("error --- addParam at key = " + key + ", value = " + value);
+			return false;
+		}
+	}
+
+	private static boolean addParamWithId(String key, String elementId, String attribute) {
+		try {
+			param.put(key, driver.findElement(By.id(elementId)).getAttribute(attribute));
+			resultList = addResultList("true --- addParam at key = " + key + ", by " + elementId + "." + attribute);
+			return true;
+		} catch (Exception e) {
+			resultList = addResultList("error --- addParam at key = " + key + ", by " + elementId + "." + attribute);
+			return false;
+		}
+	}
+
+	private static boolean compareBetweenId(String e1, String a1, String e2, String a2) {
+		try {
+			String v1 = driver.findElement(By.id(e1)).getAttribute(a1);
+			String v2 = driver.findElement(By.id(e2)).getAttribute(a2);
+			if (StringUtils.equals(v1, v2)) {
+				resultList = addResultList(StringUtils.join("true --- compareWithId ", e1, ".", a1, " ", e2, ".", a2));
+				return true;
+			} else {
+				resultList = addResultList(StringUtils.join("false --- compareWithId ", e1, ".", a1, " ", e2, ".", a2));
+				return false;
+			}
+		} catch (Exception e) {
+			resultList = addResultList(StringUtils.join("error --- compareWithId ", e1, ".", a1, " ", e2, ".", a2));
+			return false;
+		}
+	}
+
+	private static boolean compareWithParam(String e1, String a1, String key) {
+		try {
+			String v1 = driver.findElement(By.id(e1)).getAttribute(a1);
+			if (StringUtils.equals(v1, param.get(key))) {
+				resultList = addResultList(StringUtils.join("true --- compare ", e1, ".", a1, " with param ", key));
+				return true;
+			} else {
+				resultList = addResultList(StringUtils.join("false --- compare ", e1, ".", a1, " with param ", key));
+				return false;
+			}
+		} catch (Exception e) {
+			resultList = addResultList(StringUtils.join("error --- compare ", e1, ".", a1, " with param ", key));
+			return false;
+		}
+	}
+
+	private static boolean inputWithParam(String elementId, String key) {
+		try {
+			driver.findElement(By.id(elementId)).sendKeys(param.get(key));
+			resultList = addResultList("true --- inputWithParam at " + elementId + ", by param " + key);
+			return true;
+		} catch (Exception e) {
+			resultList = addResultList("error --- inputWithParam at " + elementId + ", by param " + key);
 			return false;
 		}
 	}
@@ -200,6 +273,21 @@ public class SeleniumTest {
 			case "inputbox":
 				result = inputBox(cArr[1]) && result;
 				break;
+			case "addparam":
+				result = addParam(cArr[1], cArr[2]);
+				break;
+			case "addparamwithid":
+				result = addParamWithId(cArr[1], cArr[2], cArr[3]);
+				break;
+			case "inputwithparam":
+				result = inputWithParam(cArr[1], cArr[2]);
+				break;
+			case "comparewithid":
+				result = compareBetweenId(cArr[1], cArr[2], cArr[3], cArr[4]);
+				break;
+			case "comparewithparam":
+				result = compareWithParam(cArr[1], cArr[2], cArr[3]);
+				break;
 			case "loading":
 				result = loading() && result;
 				break;
@@ -209,9 +297,16 @@ public class SeleniumTest {
 			case "runscript":
 				resultListMap.put(depth, new ArrayList<>(resultList));
 				resultList = new ArrayList<String>();
+				if (!pathSet.contains(cArr[1])) {
+					pathSet.add(cArr[1]);
+				} else {
+					resultList = addResultList("!!! loop test file error --- " + cmd);
+					break;
+				}
 				boolean runScriptResult = runTest(new File(cArr[1]), depth + 1) && result;
 				result = runScriptResult && result;
 				resultList = resultListMap.remove(depth);
+				pathSet.remove(cArr[1]);
 				resultList = addResultList(runScriptResult + " --- " + cmd);
 				break;
 			default:
