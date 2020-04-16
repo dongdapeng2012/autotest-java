@@ -223,7 +223,9 @@ public class SeleniumTest {
 		return result;
 	}
 
-	public static List<String> addResultList(String r) {
+	public static List<String> addResultList(String... s) {
+		StringBuffer sb = new StringBuffer();
+		String r = sb.append(s).toString();
 		System.out.println(r);
 		resultList.add(r);
 		return resultList;
