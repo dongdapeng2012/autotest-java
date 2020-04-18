@@ -1,6 +1,7 @@
 package com.geth.autotestjava;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -209,10 +210,10 @@ public class SeleniumTest {
 	private static boolean inputWithParam(String elementId, String key) {
 		try {
 			driver.findElement(By.id(elementId)).sendKeys(param.get(key));
-			resultList = addResultList("true --- inputWithParam at " + elementId + ", by param " + key);
+			resultList = addResultList("true --- inputWithParam at ", elementId, ", by param ", key);
 			return true;
 		} catch (Exception e) {
-			resultList = addResultList("error --- inputWithParam at " + elementId + ", by param " + key);
+			resultList = addResultList("error --- inputWithParam at ", elementId, ", by param ", key);
 			return false;
 		}
 	}
@@ -231,6 +232,14 @@ public class SeleniumTest {
 		return resultList;
 	}
 
+	public static List<String> addResultList(boolean b, String... s) {
+		StringBuffer sb = new StringBuffer();
+		String r = sb.append(b).append(s).toString();
+		System.out.println(r);
+		resultList.add(r);
+		return resultList;
+	}
+
 	public static void cleanStaticObjects() {
 		resultList = null;
 
@@ -239,7 +248,15 @@ public class SeleniumTest {
 	}
 
 	public static boolean runTest(File testFile, Integer depth) {
-		List<String> cmdList = FileUtils.readTestDoc(testFile);
+		List<String> cmdList = null;
+		try {
+			cmdList = FileUtils.readTestDoc(testFile);
+			resultList = addResultList("true --- readTestDoc");
+		} catch (IOException e) {
+			System.out.println("error --- readTestDoc at " + testFile.getAbsolutePath());
+			resultList = addResultList("error --- readTestDoc at ", testFile.getAbsolutePath());
+			return false;
+		}
 
 		boolean result = true;
 		for (String cmd : cmdList) {

@@ -28,30 +28,50 @@ public class FileUtils {
 		return jfc.getSelectedFile();
 	}
 
-	public static List<String> readTestDoc(File file) {
+	public static List<String> readTestDoc(File file) throws IOException {
 		List<String> result = new ArrayList<String>();
-
 		System.out.print("result at " + file.getPath());
 
-		try {
-			String encoding = "GBK";
-			if (file.isFile() && file.exists()) { // 判断文件是否存在
-				InputStreamReader read = new InputStreamReader(new FileInputStream(file), encoding);// 考虑到编码格式
-				BufferedReader bufferedReader = new BufferedReader(read);
-				String lineTxt = null;
-				while ((lineTxt = bufferedReader.readLine()) != null) {
-					System.out.println(lineTxt);
-					result.add(lineTxt);
-				}
-				read.close();
-			} else {
-				System.out.println("找不到指定的文件 at " + file.getAbsolutePath());
-			}
-		} catch (Exception e) {
-			System.out.println("读取文件内容出错 at " + file.getAbsolutePath());
-			e.printStackTrace();
+		if (StringUtils.right(file.getName(), 4).equalsIgnoreCase(".csv")) {
+			result = readCsv(file);
+		} else {
+			result = readTxt(file);
 		}
 
+		return result;
+	}
+
+	public static List<String> readTxt(File file) throws IOException {
+		List<String> result = new ArrayList<String>();
+		if (file.isFile() && file.exists()) {
+			InputStreamReader read = new InputStreamReader(new FileInputStream(file), "UTF-8");// 考虑到编码格式
+			BufferedReader bufferedReader = new BufferedReader(read);
+			String lineTxt = null;
+			while ((lineTxt = bufferedReader.readLine()) != null) {
+				lineTxt.replaceAll(" ", ",");
+				System.out.println(lineTxt);
+				result.add(lineTxt);
+			}
+			read.close();
+		} else {
+			System.out.println("找不到指定的文件 at " + file.getAbsolutePath());
+		}
+		return result;
+	}
+
+	public static List<String> readCsv(File file) throws IOException {
+		List<String> result = new ArrayList<String>();
+		if (file.isFile() && file.exists()) {
+			InputStreamReader read = new InputStreamReader(new FileInputStream(file), "UTF-8");// 考虑到编码格式
+			BufferedReader bufferedReader = new BufferedReader(read);
+			String lineTxt = null;
+			while ((lineTxt = bufferedReader.readLine()) != null) {
+				result.add(lineTxt);
+			}
+			read.close();
+		} else {
+			System.out.println("找不到指定的文件 at " + file.getAbsolutePath());
+		}
 		return result;
 	}
 
