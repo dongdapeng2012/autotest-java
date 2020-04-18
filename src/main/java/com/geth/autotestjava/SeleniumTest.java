@@ -260,7 +260,7 @@ public class SeleniumTest {
 
 		boolean result = true;
 		for (String cmd : cmdList) {
-			String[] cArr = StringUtils.split(cmd, " ");
+			String[] cArr = StringUtils.split(cmd, ",");
 			if (cArr.length == 0) {
 				continue;
 			}
