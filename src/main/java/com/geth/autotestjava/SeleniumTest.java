@@ -226,7 +226,7 @@ public class SeleniumTest {
 
 	public static List<String> addResultList(String... s) {
 		StringBuffer sb = new StringBuffer();
-		String r = sb.append(s).toString();
+		String r = sb.append(StringUtils.join(s)).toString();
 		System.out.println(r);
 		resultList.add(r);
 		return resultList;
@@ -234,7 +234,7 @@ public class SeleniumTest {
 
 	public static List<String> addResultList(boolean b, String... s) {
 		StringBuffer sb = new StringBuffer();
-		String r = sb.append(b).append(s).toString();
+		String r = new String(sb.append(b).append(StringUtils.join(s)));
 		System.out.println(r);
 		resultList.add(r);
 		return resultList;
@@ -260,6 +260,7 @@ public class SeleniumTest {
 
 		boolean result = true;
 		for (String cmd : cmdList) {
+			cmd.replaceAll("\\,{2,}", ",");
 			String[] cArr = StringUtils.split(cmd, ",");
 			if (cArr.length == 0) {
 				continue;
@@ -311,7 +312,7 @@ public class SeleniumTest {
 				result = loading() && result;
 				break;
 			case "quitbrowser":
-				quitBrowser();
+				result = quitBrowser() && result;
 				break;
 			case "runscript":
 				resultListMap.put(depth, new ArrayList<>(resultList));

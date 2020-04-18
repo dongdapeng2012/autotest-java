@@ -66,6 +66,7 @@ public class FileUtils {
 			BufferedReader bufferedReader = new BufferedReader(read);
 			String lineTxt = null;
 			while ((lineTxt = bufferedReader.readLine()) != null) {
+				System.out.println(lineTxt);
 				result.add(lineTxt);
 			}
 			read.close();
