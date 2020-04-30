@@ -35,6 +35,8 @@
 * loading
 	* >	will popup a msg box and interupt operation until click ok button
 
+* wait num_seconds
+
 * quitbrowser
 
 * runscript test_script_path

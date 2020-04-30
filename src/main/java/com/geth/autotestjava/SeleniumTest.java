@@ -3,6 +3,7 @@ package com.geth.autotestjava;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class SeleniumTest {
 	private static List<String> resultList = new ArrayList<String>();
@@ -224,6 +227,22 @@ public class SeleniumTest {
 		return result;
 	}
 
+	private static boolean wait(String s) {
+		try {
+			Date start = new Date();
+			Thread.sleep(Long.parseLong(s) * 1000);
+			Date end = new Date();
+			resultList = addResultList("true --- wait from ", start.toString(), " to ", end.toString());
+			return true;
+		} catch (NumberFormatException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			resultList = addResultList("error --- wait ", s);
+			return true;
+		} 
+		
+	}
+
 	public static List<String> addResultList(String... s) {
 		StringBuffer sb = new StringBuffer();
 		String r = sb.append(StringUtils.join(s)).toString();
@@ -314,6 +333,9 @@ public class SeleniumTest {
 			case "quitbrowser":
 				result = quitBrowser() && result;
 				break;
+			case "wait":
+				result = wait(cArr[1]) && result;
+				break;
 			case "runscript":
 				resultListMap.put(depth, new ArrayList<>(resultList));
 				resultList = new ArrayList<String>();
@@ -338,4 +360,5 @@ public class SeleniumTest {
 
 		return result;
 	}
+
 }

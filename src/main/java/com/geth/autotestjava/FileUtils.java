@@ -48,9 +48,9 @@ public class FileUtils {
 			BufferedReader bufferedReader = new BufferedReader(read);
 			String lineTxt = null;
 			while ((lineTxt = bufferedReader.readLine()) != null) {
-				lineTxt.replaceAll(" ", ",");
-				System.out.println(lineTxt);
-				result.add(lineTxt);
+				String l = lineTxt.replaceAll("[\\s]", ",");
+				System.out.println(l);
+				result.add(l);
 			}
 			read.close();
 		} else {
