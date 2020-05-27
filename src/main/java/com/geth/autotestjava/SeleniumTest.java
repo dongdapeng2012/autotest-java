@@ -16,8 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.WebElement;
 
 public class SeleniumTest {
 	private static List<String> resultList = new ArrayList<String>();
@@ -56,44 +55,45 @@ public class SeleniumTest {
 		}
 	}
 
-	private static boolean checkAttribute(String cmd, String elementId, String attribute, String value) {
+	private static boolean checkAttribute(String cmd, String element, String attribute, String value) {
 		try {
-			return checkTextEquals(cmd, value, driver.findElement(By.id(elementId)).getAttribute(attribute));
+			WebElement w = findElement(element);
+			return checkTextEquals(cmd, value, w.getAttribute(attribute));
 		} catch (Exception e) {
 			resultList = addResultList("error -- checkAttribute");
 			return false;
 		}
 	}
 
-	private static boolean click(String elementId) {
+	private static boolean click(String element) {
 		try {
-			driver.findElement(By.id(elementId)).click();
-			resultList = addResultList("true --- click " + elementId);
+			findElement(element).click();
+			resultList = addResultList("true --- click " + element);
 			return true;
 		} catch (Exception e) {
-			resultList = addResultList("error --- click " + elementId);
+			resultList = addResultList("error --- click " + element);
 			return false;
 		}
 	}
 
-	private static boolean input(String elementId, String value) {
+	private static boolean input(String element, String value) {
 		try {
-			driver.findElement(By.id(elementId)).sendKeys(value);
-			resultList = addResultList("true --- input at " + elementId + ", value = " + value);
+			findElement(element).sendKeys(value);
+			resultList = addResultList("true --- input at " + element + ", value = " + value);
 			return true;
 		} catch (Exception e) {
-			resultList = addResultList("error --- input at " + elementId + ", value = " + value);
+			resultList = addResultList("error --- input at " + element + ", value = " + value);
 			return false;
 		}
 	}
 
-	private static boolean clear(String elementId) {
+	private static boolean clear(String element) {
 		try {
-			driver.findElement(By.id(elementId)).clear();
-			resultList = addResultList("true --- clear at " + elementId);
+			findElement(element).clear();
+			resultList = addResultList("true --- clear at " + element);
 			return true;
 		} catch (Exception e) {
-			resultList = addResultList("error --- clear at " + elementId);
+			resultList = addResultList("error --- clear at " + element);
 			return false;
 		}
 	}
@@ -110,14 +110,14 @@ public class SeleniumTest {
 		}
 	}
 
-	private static boolean inputBox(String elementId) {
+	private static boolean inputBox(String element) {
 		try {
-			String inputValue = JOptionPane.showInputDialog("Please input a value at " + elementId);
-			driver.findElement(By.id(elementId)).sendKeys(inputValue);
-			resultList = addResultList("true --- inputbox " + elementId);
+			String inputValue = JOptionPane.showInputDialog("Please input a value at " + element);
+			findElement(element).sendKeys(inputValue);
+			resultList = addResultList("true --- inputbox " + element);
 			return true;
 		} catch (Exception e) {
-			resultList = addResultList("error --- inputbox " + elementId);
+			resultList = addResultList("error --- inputbox " + element);
 			return false;
 		}
 	}
@@ -166,21 +166,21 @@ public class SeleniumTest {
 		}
 	}
 
-	private static boolean addParamWithId(String key, String elementId, String attribute) {
+	private static boolean addParamWithId(String key, String element, String attribute) {
 		try {
-			param.put(key, driver.findElement(By.id(elementId)).getAttribute(attribute));
-			resultList = addResultList("true --- addParam at key = " + key + ", by " + elementId + "." + attribute);
+			param.put(key, findElement(element).getAttribute(attribute));
+			resultList = addResultList("true --- addParam at key = " + key + ", by " + element + "." + attribute);
 			return true;
 		} catch (Exception e) {
-			resultList = addResultList("error --- addParam at key = " + key + ", by " + elementId + "." + attribute);
+			resultList = addResultList("error --- addParam at key = " + key + ", by " + element + "." + attribute);
 			return false;
 		}
 	}
 
 	private static boolean compareBetweenId(String e1, String a1, String e2, String a2) {
 		try {
-			String v1 = driver.findElement(By.id(e1)).getAttribute(a1);
-			String v2 = driver.findElement(By.id(e2)).getAttribute(a2);
+			String v1 = findElement(e1).getAttribute(a1);
+			String v2 = findElement(e2).getAttribute(a2);
 			if (StringUtils.equals(v1, v2)) {
 				resultList = addResultList(StringUtils.join("true --- compareWithId ", e1, ".", a1, " ", e2, ".", a2));
 				return true;
@@ -196,7 +196,7 @@ public class SeleniumTest {
 
 	private static boolean compareWithParam(String e1, String a1, String key) {
 		try {
-			String v1 = driver.findElement(By.id(e1)).getAttribute(a1);
+			String v1 = findElement(e1).getAttribute(a1);
 			if (StringUtils.equals(v1, param.get(key))) {
 				resultList = addResultList(StringUtils.join("true --- compare ", e1, ".", a1, " with param ", key));
 				return true;
@@ -210,13 +210,13 @@ public class SeleniumTest {
 		}
 	}
 
-	private static boolean inputWithParam(String elementId, String key) {
+	private static boolean inputWithParam(String element, String key) {
 		try {
-			driver.findElement(By.id(elementId)).sendKeys(param.get(key));
-			resultList = addResultList("true --- inputWithParam at ", elementId, ", by param ", key);
+			findElement(element).sendKeys(param.get(key));
+			resultList = addResultList("true --- inputWithParam at ", element, ", by param ", key);
 			return true;
 		} catch (Exception e) {
-			resultList = addResultList("error --- inputWithParam at ", elementId, ", by param ", key);
+			resultList = addResultList("error --- inputWithParam at ", element, ", by param ", key);
 			return false;
 		}
 	}
@@ -239,8 +239,8 @@ public class SeleniumTest {
 			e.printStackTrace();
 			resultList = addResultList("error --- wait ", s);
 			return true;
-		} 
-		
+		}
+
 	}
 
 	public static List<String> addResultList(String... s) {
@@ -264,6 +264,55 @@ public class SeleniumTest {
 
 		driver.quit();
 		driver = null;
+	}
+
+	public static WebElement findElement(String s) {
+		WebElement w = null;
+
+		w = driver.findElement(By.id(s));
+		if (w != null) {
+			return w;
+		}
+		w = driver.findElement(By.name(s));
+		if (w != null) {
+			return w;
+		}
+		w = driver.findElement(By.className(s));
+		if (w != null) {
+			return w;
+		}
+		w = driver.findElement(By.tagName(s));
+		if (w != null) {
+			return w;
+		}
+		w = driver.findElement(By.linkText(s));
+		if (w != null) {
+			return w;
+		}
+		w = driver.findElement(By.partialLinkText(s));
+		if (w != null) {
+			return w;
+		}
+		w = driver.findElement(By.cssSelector(s));
+		if (w != null) {
+			return w;
+		}
+		w = driver.findElement(By.xpath(s));
+		if (w != null) {
+			return w;
+		}
+
+		resultList = addResultList("error --- cannot find element : " + s);
+		return null;
+	}
+
+	public static boolean checkNullOrSetElement(WebElement w, WebElement r) {
+		if (r != null) {
+			w = r;
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	public static boolean runTest(File testFile, Integer depth) {
